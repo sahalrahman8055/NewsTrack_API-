@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:newstrack/helper/news.dart';
-import 'package:newstrack/model/article_model.dart';
+import 'package:newstrack/controller/news_provider.dart';
 import 'package:newstrack/view/article_view.dart';
+import 'package:provider/provider.dart';
 
 class CategoryScreen extends StatefulWidget {
   final String category;
@@ -13,23 +13,19 @@ class CategoryScreen extends StatefulWidget {
 }
 
 class _CategoryScreenState extends State<CategoryScreen> {
-  List<ArticleModel> article = [];
-  bool _loading = true;
+  // List<ArticleModel> article = <ArticleModel>[];
 
   @override
   void initState() {
-
     super.initState();
     getCategoryNews();
   }
 
   getCategoryNews() async {
-    CategoryNewsClass newsClass = CategoryNewsClass();
-    await newsClass.getCategoryNews(widget.category);
-    article = newsClass.news;
-    setState(() {
-      _loading = false;
-    });
+    final newsProvider = Provider.of<NewsProvider>(context, listen: false);
+    newsProvider.getAllCategoryNews(widget.category);
+
+    newsProvider.changeLoading;
   }
 
   @override
@@ -47,55 +43,53 @@ class _CategoryScreenState extends State<CategoryScreen> {
           ],
         ),
       ),
-      body:
-            _loading
-          ? Center(
-              child: Container(
-                child: CircularProgressIndicator(),
-              ),
-            )
-          : 
-          SingleChildScrollView(
-              child: Container(
-                child: Column(
-                  children: [
-                    Container(
-                      padding: EdgeInsets.only(top: 16),
-                      child: ListView.builder(
-                        itemCount: article.length,
-                        shrinkWrap: true,
-                        physics: ClampingScrollPhysics(),
-                        itemBuilder: (context, index) {
-                          return BlogTile(
-                            imageUrl: article[index].urlToImage != null
-                                ? article[index].urlToImage!
-                                : "", // Use an empty string if null
-                            desc: article[index].description != null
-                                ? article[index].description!
-                                : "",
-                            title: article[index].title != null
-                                ? article[index].title!
-                                : "",
-                            url: article[index].url != null
-                                ? article[index].url!
-                                : "",
-                          );
-                        },
-                      ),
-                    )
-                  ],
-                ),
-              ),
-            ),
+      body: Consumer<NewsProvider>(
+        builder: (context, newsProvider, child) {
+          return newsProvider.loading
+              ? Center(
+                  child: Container(
+                    child: CircularProgressIndicator(),
+                  ),
+                )
+              : SingleChildScrollView(
+                  child: Container(
+                    child: Column(
+                      children: [
+                        Container(
+                          padding: EdgeInsets.only(top: 16),
+                          child: ListView.builder(
+                            itemCount: newsProvider.articles.length,
+                            shrinkWrap: true,
+                            physics: ClampingScrollPhysics(),
+                            itemBuilder: (context, index) {
+                              return BlogTile(
+                          imageUrl: newsProvider.articles[index].urlToImage,
+                                  title: newsProvider.articles[index].title,
+                                  desc: newsProvider.articles[index].description,
+                                  url: newsProvider.articles[index].url,
+                              );
+                            },
+                          ),
+                        )
+                      ],
+                    ),
+                  ),
+                );
+        },
+      ),
     );
   }
 }
 
 class BlogTile extends StatelessWidget {
- 
-  final String imageUrl, title, desc, url;
+  final imageUrl, title, desc, url;
 
-  const BlogTile({super.key, required this.imageUrl, required this.title, required this.desc, required this.url});
+  const BlogTile(
+      {super.key,
+      required this.imageUrl,
+      required this.title,
+      required this.desc,
+      required this.url});
 
   @override
   Widget build(BuildContext context) {
@@ -113,16 +107,16 @@ class BlogTile extends StatelessWidget {
           children: [
             ClipRRect(
                 borderRadius: BorderRadius.circular(8),
-                child: Image.network(imageUrl)),
+                child: Image.network(imageUrl ?? "https://www.smaroadsafety.com/wp-content/uploads/2022/06/no-pic.png")),
             Text(
-              title,
+              title ?? "Text Note Found",
               style: TextStyle(fontSize: 17, fontWeight: FontWeight.w600),
             ),
             SizedBox(
               height: 8,
             ),
             Text(
-              desc,
+              desc ?? "Text Note Found",
               style: TextStyle(color: Colors.grey, fontWeight: FontWeight.w400),
             ),
           ],

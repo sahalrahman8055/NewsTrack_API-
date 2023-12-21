@@ -3,12 +3,12 @@ import 'package:http/http.dart' as http;
 import 'package:newstrack/model/article_model.dart';
 
 class News {
-  List<ArticleModel> news = [];
+ // List<ArticleModel> news = [];
 
   Future<List<ArticleModel>> getNews() async {
     try {
       String url =
-          "https://newsapi.org/v2/top-headlines?country=in&category=business&apiKey=de7769d82fcf4555b9d6c72889a1ed1b";
+          "https://newsapi.org/v2/top-headlines?country=in&apiKey=de7769d82fcf4555b9d6c72889a1ed1b";
 
       var response = await http.get(Uri.parse(url));
 
@@ -16,8 +16,8 @@ class News {
       final articleList = (jsonData["articles"] as List).map((e) {
         return ArticleModel.fromJson(e as Map<String, dynamic>);
       }).toList();
-      news = articleList;
-      return news;
+      articleList;
+      return articleList;
     } catch (e) {
       return [];
     }
@@ -25,7 +25,6 @@ class News {
 }
 
 class CategoryNewsClass {
-  List<ArticleModel> news = [];
   Future<List<ArticleModel>> getCategoryNews(String category) async {
     try {
       String url =
@@ -37,11 +36,10 @@ class CategoryNewsClass {
       final articleList = (jsonData["articles"] as List).map((e) {
         return ArticleModel.fromJson(e as Map<String, dynamic>);
       }).toList();
-      news = articleList;
-      return news;
+
+      return articleList;
     } catch (e) {
       return [];
     }
   }
 }
-

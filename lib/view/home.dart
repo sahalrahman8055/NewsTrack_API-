@@ -1,11 +1,10 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:newstrack/controller/news_provider.dart';
 import 'package:newstrack/helper/data.dart';
-import 'package:newstrack/helper/news.dart';
-import 'package:newstrack/model/article_model.dart';
-import 'package:newstrack/model/category_model.dart';
 import 'package:newstrack/view/article_view.dart';
 import 'package:newstrack/view/category_news.dart';
+import 'package:provider/provider.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -15,24 +14,19 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  List<CategoryModel> categories = [];
-  List<ArticleModel> article = [];
-  bool _loading = true;
+  // List<ArticleModel> article = [];
+
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
-    categories = getCategories();
+
     getNews();
   }
 
   getNews() async {
-    News newsClass = News();
-    await newsClass.getNews();
-    article = newsClass.news;
-    setState(() {
-      _loading = false;
-    });
+    final value = Provider.of<NewsProvider>(context, listen: false);
+    value.getAllNews();
+    value.changeLoading();
   }
 
   @override
@@ -50,58 +44,61 @@ class _HomeScreenState extends State<HomeScreen> {
           ],
         ),
       ),
-      body: _loading
-          ? Center(
-              child: Container(
-                child: const CircularProgressIndicator(),
-              ),
-            )
-          : SingleChildScrollView(
-              child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 16),
-                child: Column(
-                  children: [
-                    Container(
-                      height: 80,
-                      child: ListView.builder(
-                        itemCount: categories.length,
-                        shrinkWrap: true,
-                        scrollDirection: Axis.horizontal,
-                        itemBuilder: (context, index) {
-                          return CategoryTile(
-                              imageUrl: categories[index].imageUrl,
-                              categoryName: categories[index].categorieName);
-                        },
-                      ),
+      body: Consumer<NewsProvider>(
+        builder: (context, value, child) {
+          return value.loading
+              ? Center(
+                  child: Container(
+                    child: CircularProgressIndicator(),
+                  ),
+                )
+              : SingleChildScrollView(
+                  child: Container(
+                    padding: EdgeInsets.symmetric(horizontal: 16),
+                    child: Column(
+                      children: [
+                        Container(
+                          height: 80,
+                          child: ListView.builder(
+                            itemCount: categories.length,
+                            shrinkWrap: true,
+                            scrollDirection: Axis.horizontal,
+                            itemBuilder: (context, index) {
+                              return CategoryTile(
+                                  imageUrl: categories[index].imageUrl,
+                                  categoryName:
+                                      categories[index].categorieName);
+                            },
+                          ),
+                        ),
+                        Container(
+                          padding: EdgeInsets.only(top: 16),
+                          child: Consumer<NewsProvider>(
+                            builder: (context, newsProvider, child) {
+                              return ListView.builder(
+                                itemCount: newsProvider.articles.length,
+                                shrinkWrap: true,
+                                physics: ClampingScrollPhysics(),
+                                itemBuilder: (context, index) {
+                                  return BlogTile(
+                                    imageUrl:
+                                        newsProvider.articles[index].urlToImage,
+                                    title: newsProvider.articles[index].title,
+                                    desc: newsProvider
+                                        .articles[index].description,
+                                    url: newsProvider.articles[index].url,
+                                  );
+                                },
+                              );
+                            },
+                          ),
+                        )
+                      ],
                     ),
-                    Container(
-                      padding: const EdgeInsets.only(top: 16),
-                      child: ListView.builder(
-                        itemCount: article.length,
-                        shrinkWrap: true,
-                        physics: const ClampingScrollPhysics(),
-                        itemBuilder: (context, index) {
-                          return BlogTile(
-                            imageUrl: article[index].urlToImage != null
-                                ? article[index].urlToImage!
-                                : "", // Use an empty string if null
-                            desc: article[index].description != null
-                                ? article[index].description!
-                                : "",
-                            title: article[index].title != null
-                                ? article[index].title!
-                                : "",
-                            url: article[index].url != null
-                                ? article[index].url!
-                                : "",
-                          );
-                        },
-                      ),
-                    )
-                  ],
-                ),
-              ),
-            ),
+                  ),
+                );
+        },
+      ),
     );
   }
 }
@@ -117,12 +114,12 @@ class CategoryTile extends StatelessWidget {
         Navigator.push(
             context,
             MaterialPageRoute(
-              builder: (context) => CategoryScreen(
-                  category: categoryName.toLowerCase()),
+              builder: (context) =>
+                  CategoryScreen(category: categoryName.toLowerCase()),
             ));
       },
       child: Container(
-        margin: const EdgeInsets.only(right: 16),
+        margin: EdgeInsets.only(right: 16),
         child: Stack(
           children: [
             ClipRRect(
@@ -144,7 +141,7 @@ class CategoryTile extends StatelessWidget {
               height: 60,
               child: Text(
                 categoryName,
-                style: const TextStyle(
+                style: TextStyle(
                     color: Colors.white,
                     fontSize: 15,
                     fontWeight: FontWeight.w500),
@@ -164,7 +161,7 @@ class BlogTile extends StatelessWidget {
       required this.desc,
       required this.title,
       required this.url});
-  final String imageUrl, title, desc, url;
+  final imageUrl, title, desc, url;
 
   @override
   Widget build(BuildContext context) {
@@ -177,22 +174,23 @@ class BlogTile extends StatelessWidget {
             ));
       },
       child: Container(
-        margin: const EdgeInsets.only(bottom: 16),
+        margin: EdgeInsets.only(bottom: 16),
         child: Column(
           children: [
             ClipRRect(
                 borderRadius: BorderRadius.circular(8),
-                child: Image.network(imageUrl)),
+                child: Image.network(imageUrl ??
+                  "https://www.smaroadsafety.com/wp-content/uploads/2022/06/no-pic.png")),
             Text(
-              title,
-              style: const TextStyle(fontSize: 17, fontWeight: FontWeight.w600),
+              title ?? "Text Note Found",
+              style: TextStyle(fontSize: 17, fontWeight: FontWeight.w600),
             ),
-            const SizedBox(
+            SizedBox(
               height: 8,
             ),
             Text(
-              desc,
-              style: const TextStyle(color: Colors.grey, fontWeight: FontWeight.w400),
+               desc ?? "Text Not Found",
+              style: TextStyle(color: Colors.grey, fontWeight: FontWeight.w400),
             ),
           ],
         ),
