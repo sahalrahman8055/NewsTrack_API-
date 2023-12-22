@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:newstrack/controller/news_provider.dart';
-import 'package:newstrack/view/home.dart';
+import 'package:newstrack/controller/home_provider.dart';
+import 'package:newstrack/controller/category_provider.dart';
+import 'package:newstrack/view/home_screen/home.dart';
+
 import 'package:provider/provider.dart';
 
 void main() {
@@ -13,8 +15,15 @@ class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    return ChangeNotifierProvider(
-      create: (context) => NewsProvider(),
+    return MultiProvider(
+      providers: [
+        ChangeNotifierProvider(
+          create: (context) => CategoryController(),
+        ),
+        ChangeNotifierProvider(
+          create: (context) => HomeControl(),
+        )
+      ],
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
         title: 'Flutter Demo',

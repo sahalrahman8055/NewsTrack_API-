@@ -1,9 +1,10 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
-import 'package:newstrack/controller/news_provider.dart';
+import 'package:newstrack/controller/category_provider.dart';
+import 'package:newstrack/controller/home_provider.dart';
 import 'package:newstrack/helper/data.dart';
-import 'package:newstrack/view/article_view.dart';
-import 'package:newstrack/view/category_news.dart';
+import 'package:newstrack/view/article/article_view.dart';
+import 'package:newstrack/view/category/category_news.dart';
 import 'package:provider/provider.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -20,14 +21,10 @@ class _HomeScreenState extends State<HomeScreen> {
   void initState() {
     super.initState();
 
-    getNews();
+   final provider = Provider.of<HomeControl>(context, listen: false);
+    provider.getNews();
   }
 
-  getNews() async {
-    final value = Provider.of<NewsProvider>(context, listen: false);
-    value.getAllNews();
-    value.changeLoading();
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -44,7 +41,7 @@ class _HomeScreenState extends State<HomeScreen> {
           ],
         ),
       ),
-      body: Consumer<NewsProvider>(
+      body: Consumer<HomeControl>(
         builder: (context, value, child) {
           return value.loading
               ? Center(
@@ -67,13 +64,13 @@ class _HomeScreenState extends State<HomeScreen> {
                               return CategoryTile(
                                   imageUrl: categories[index].imageUrl,
                                   categoryName:
-                                      categories[index].categorieName);
+                                      categories[index].categoryName);
                             },
                           ),
                         ),
                         Container(
                           padding: EdgeInsets.only(top: 16),
-                          child: Consumer<NewsProvider>(
+                          child: Consumer<HomeControl>(
                             builder: (context, newsProvider, child) {
                               return ListView.builder(
                                 itemCount: newsProvider.articles.length,

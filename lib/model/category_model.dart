@@ -1,9 +1,6 @@
 class CategoryModel {
+  String? categoryName;
   String? imageUrl;
-  String? categorieName;
 
-  CategoryModel({
-    required this.categorieName,
-    required this.imageUrl,
-  });
+  CategoryModel({this.categoryName, this.imageUrl});
 }

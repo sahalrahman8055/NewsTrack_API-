@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:newstrack/controller/news_provider.dart';
-import 'package:newstrack/view/article_view.dart';
+import 'package:newstrack/controller/category_provider.dart';
+import 'package:newstrack/controller/category_provider.dart';
+import 'package:newstrack/view/article/article_view.dart';
 import 'package:provider/provider.dart';
 
 class CategoryScreen extends StatefulWidget {
@@ -18,15 +19,11 @@ class _CategoryScreenState extends State<CategoryScreen> {
   @override
   void initState() {
     super.initState();
-    getCategoryNews();
+     final provider = Provider.of<CategoryController>(context, listen: false);
+    provider.getCategoryNews(widget.category);
   }
 
-  getCategoryNews() async {
-    final newsProvider = Provider.of<NewsProvider>(context, listen: false);
-    newsProvider.getAllCategoryNews(widget.category);
 
-    newsProvider.changeLoading;
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -43,7 +40,7 @@ class _CategoryScreenState extends State<CategoryScreen> {
           ],
         ),
       ),
-      body: Consumer<NewsProvider>(
+      body: Consumer<CategoryController>(
         builder: (context, newsProvider, child) {
           return newsProvider.loading
               ? Center(
@@ -58,15 +55,15 @@ class _CategoryScreenState extends State<CategoryScreen> {
                         Container(
                           padding: EdgeInsets.only(top: 16),
                           child: ListView.builder(
-                            itemCount: newsProvider.articles.length,
+                            itemCount: newsProvider.articlnews.length,
                             shrinkWrap: true,
                             physics: ClampingScrollPhysics(),
                             itemBuilder: (context, index) {
                               return BlogTile(
-                          imageUrl: newsProvider.articles[index].urlToImage,
-                                  title: newsProvider.articles[index].title,
-                                  desc: newsProvider.articles[index].description,
-                                  url: newsProvider.articles[index].url,
+                          imageUrl: newsProvider.articlnews[index].urlToImage,
+                                  title: newsProvider.articlnews[index].title,
+                                  desc: newsProvider.articlnews[index].description,
+                                  url: newsProvider.articlnews[index].url,
                               );
                             },
                           ),
