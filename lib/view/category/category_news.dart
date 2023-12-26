@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:newstrack/controller/category_provider.dart';
-import 'package:newstrack/controller/category_provider.dart';
+import 'package:newstrack/helper/color.dart';
 import 'package:newstrack/view/article/article_view.dart';
 import 'package:provider/provider.dart';
 
@@ -19,11 +19,9 @@ class _CategoryScreenState extends State<CategoryScreen> {
   @override
   void initState() {
     super.initState();
-     final provider = Provider.of<CategoryController>(context, listen: false);
+    final provider = Provider.of<CategoryController>(context, listen: false);
     provider.getCategoryNews(widget.category);
   }
-
-
 
   @override
   Widget build(BuildContext context) {
@@ -35,7 +33,7 @@ class _CategoryScreenState extends State<CategoryScreen> {
             Text("News"),
             Text(
               "Track",
-              style: TextStyle(color: Colors.red),
+              style: TextStyle(color: kredColor),
             ),
           ],
         ),
@@ -60,10 +58,12 @@ class _CategoryScreenState extends State<CategoryScreen> {
                             physics: ClampingScrollPhysics(),
                             itemBuilder: (context, index) {
                               return BlogTile(
-                          imageUrl: newsProvider.articlnews[index].urlToImage,
-                                  title: newsProvider.articlnews[index].title,
-                                  desc: newsProvider.articlnews[index].description,
-                                  url: newsProvider.articlnews[index].url,
+                                imageUrl:
+                                    newsProvider.articlnews[index].urlToImage,
+                                title: newsProvider.articlnews[index].title,
+                                desc:
+                                    newsProvider.articlnews[index].description,
+                                url: newsProvider.articlnews[index].url,
                               );
                             },
                           ),
@@ -104,7 +104,8 @@ class BlogTile extends StatelessWidget {
           children: [
             ClipRRect(
                 borderRadius: BorderRadius.circular(8),
-                child: Image.network(imageUrl ?? "https://www.smaroadsafety.com/wp-content/uploads/2022/06/no-pic.png")),
+                child: Image.network(imageUrl ??
+                    "https://www.smaroadsafety.com/wp-content/uploads/2022/06/no-pic.png")),
             Text(
               title ?? "Text Note Found",
               style: TextStyle(fontSize: 17, fontWeight: FontWeight.w600),
@@ -114,7 +115,7 @@ class BlogTile extends StatelessWidget {
             ),
             Text(
               desc ?? "Text Note Found",
-              style: TextStyle(color: Colors.grey, fontWeight: FontWeight.w400),
+              style: TextStyle(color: kGreyColor, fontWeight: FontWeight.w400),
             ),
           ],
         ),

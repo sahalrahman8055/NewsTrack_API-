@@ -1,8 +1,9 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
-import 'package:newstrack/controller/category_provider.dart';
 import 'package:newstrack/controller/home_provider.dart';
+import 'package:newstrack/helper/color.dart';
 import 'package:newstrack/helper/data.dart';
+import 'package:newstrack/helper/sized.dart';
 import 'package:newstrack/view/article/article_view.dart';
 import 'package:newstrack/view/category/category_news.dart';
 import 'package:provider/provider.dart';
@@ -21,22 +22,21 @@ class _HomeScreenState extends State<HomeScreen> {
   void initState() {
     super.initState();
 
-   final provider = Provider.of<HomeControl>(context, listen: false);
+    final provider = Provider.of<HomeControl>(context, listen: false);
     provider.getNews();
   }
-
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Row(
+        title: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Text("News"),
             Text(
               "Track",
-              style: TextStyle(color: Colors.red),
+              style: TextStyle(color: kredColor),
             ),
           ],
         ),
@@ -63,8 +63,7 @@ class _HomeScreenState extends State<HomeScreen> {
                             itemBuilder: (context, index) {
                               return CategoryTile(
                                   imageUrl: categories[index].imageUrl,
-                                  categoryName:
-                                      categories[index].categoryName);
+                                  categoryName: categories[index].categoryName);
                             },
                           ),
                         ),
@@ -132,14 +131,14 @@ class CategoryTile extends StatelessWidget {
               alignment: Alignment.center,
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(7),
-                color: Colors.black26,
+                color: kBlack26Color,
               ),
               width: 120,
               height: 60,
               child: Text(
                 categoryName,
                 style: TextStyle(
-                    color: Colors.white,
+                    color: kWhiteColor,
                     fontSize: 15,
                     fontWeight: FontWeight.w500),
               ),
@@ -177,17 +176,15 @@ class BlogTile extends StatelessWidget {
             ClipRRect(
                 borderRadius: BorderRadius.circular(8),
                 child: Image.network(imageUrl ??
-                  "https://www.smaroadsafety.com/wp-content/uploads/2022/06/no-pic.png")),
+                    "https://www.smaroadsafety.com/wp-content/uploads/2022/06/no-pic.png")),
             Text(
               title ?? "Text Note Found",
               style: TextStyle(fontSize: 17, fontWeight: FontWeight.w600),
             ),
-            SizedBox(
-              height: 8,
-            ),
+            kSize8,
             Text(
-               desc ?? "Text Not Found",
-              style: TextStyle(color: Colors.grey, fontWeight: FontWeight.w400),
+              desc ?? "Text Not Found",
+              style: TextStyle(color: kGreyColor, fontWeight: FontWeight.w400),
             ),
           ],
         ),

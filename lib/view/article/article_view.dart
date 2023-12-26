@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:newstrack/helper/color.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 
 class ArticleView extends StatelessWidget {
@@ -20,7 +21,7 @@ class ArticleView extends StatelessWidget {
             Text("News"),
             Text(
               "Track",
-              style: TextStyle(color: Colors.red),
+              style: TextStyle(color:kredColor),
             ),
           ],
         ),

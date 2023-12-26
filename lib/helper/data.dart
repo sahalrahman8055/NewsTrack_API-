@@ -1,7 +1,6 @@
 import 'package:newstrack/model/category_model.dart';
 
 List<CategoryModel> categories = [
-  
   //1
   CategoryModel(
       categoryName: "Business",
